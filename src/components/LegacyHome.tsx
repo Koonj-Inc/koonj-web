@@ -1,621 +1,617 @@
-diff --git a/d:\Code\mobile-apps\koonj-web\src/app/page.tsx b/d:\Code\mobile-apps\koonj-web\src/app/page.tsx
-deleted file mode 100644
---- a/d:\Code\mobile-apps\koonj-web\src/app/page.tsx
-+++ /dev/null
-@@ -1,616 +0,0 @@
--﻿"use client";
--
--import Image from "next/image";
--import { useEffect, useMemo, useState } from "react";
--import Script from "next/script";
--
--import AnimatedCursor from "@/components/AnimatedCursor";
--import CursorSplash from "@/components/CursorSplash";
--import CountdownBanner from "@/components/sections/CountdownBanner";
--import ExperienceSection from "@/components/sections/ExperienceSection";
--import GameLoopSection from "@/components/sections/GameLoopSection";
--import GitHubSection from "@/components/sections/GitHubSection";
--import HubsSection from "@/components/sections/HubsSection";
--import ArchitectureSection from "@/components/sections/ArchitectureSection";
--import ColorMoodSection from "@/components/sections/ColorMoodSection";
--import HeroSection from "@/components/sections/HeroSection";
--import SupportSection from "@/components/sections/SupportSection";
--import SystemsSection from "@/components/sections/SystemsSection";
--import WhySection from "@/components/sections/WhySection";
--import ForWhomSection from "@/components/sections/ForWhomSection";
--import type {
--  LocaleCode,
--  LocaleOption,
--  FeatureCard,
--  RewardCard,
--  HubCard,
--  SystemCard,
--  OrgInfo,
--  TimeSegment,
--} from "@/types/app";
--
--type TimeLeft = {
--  days: number;
--  hours: number;
--  minutes: number;
--  seconds: number;
--};
--
--const calculateTimeLeft = (target: Date): TimeLeft => {
--  const diff = target.getTime() - Date.now();
--  if (diff <= 0) {
--    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
--  }
--  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
--  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
--  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
--  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
--  return { days, hours, minutes, seconds };
--};
--
--const releaseDate = new Date("2026-02-23T00:00:00Z");
--
--const locales: LocaleOption[] = [
--  { code: "en", label: "English", dir: "ltr" },
--  { code: "fa", label: "فارسی", dir: "rtl" },
--];
--
--const navLinks = [
--  { id: "countdown", label: { en: "Countdown", fa: "شمارش" } },
--  { id: "hero", label: { en: "Intro", fa: "معرفی" } },
--  { id: "experience", label: { en: "Experience", fa: "تجربه" } },
--  { id: "game-loop", label: { en: "Game", fa: "بازی" } },
--  { id: "hubs", label: { en: "Hubs", fa: "هاب‌ها" } },
--  { id: "support", label: { en: "Support", fa: "حمایت" } },
--  { id: "github", label: { en: "GitHub", fa: "گیت‌هاب" } },
--];
--
--const heroCopy = {
--  en: {
--    title: "Koonj is the hidden corner where adventure games, communities, and Iranian cities align.",
--    subtitle:
--      "Discover quests, join community groups, share shops and posts, and let every province, city, and center keep moving together.",
--    describe:
--      "Think of Koonj as the game’s mapped-out corner: rituals, shops, and circle posts flow into one bilingual hub that knows when to pull you back in.",
--  },
--  fa: {
--    title: "کونج همان گوشۀ پنهان است که بازی‌های ماجراجویانه، گروه‌ها و شهرهای ایران را کنار هم می‌گذارد.",
--    subtitle:
--      "ماموریت‌ها را کشف کنید، در گروه‌های اجتماعی شرکت کنید، فروشگاه‌ها و پست‌ها را ثبت کنید و بگذارید هر استان، شهر و مرکز در جریان بماند.",
--    describe:
--      "به کونج مانند گوشۀ خاص نقشه نگاه کنید: آیین‌ها، فروشگاه‌ها و پست‌های گروهی در یک گِردهمایی دو زبانه جریان پیدا می‌کنند تا وقتی لازم شد، شما را دوباره به بازی بکشاند.",
--  },
--};
--
--const features: Record<LocaleCode, FeatureCard[]> = {
--  en: [
--    {
--      title: "Provincial hubs",
--      body: "Each Iranian center, province, and city gets its own flow so quests, shops, and posts stay grounded locally.",
--      detail: "Maps, routes, and secrets follow real geography so every player feels the city they live in.",
--    },
--    {
--      title: "Community groups",
--      body: "Create or join circles for explorers, shopkeepers, storytellers, and province crews.",
--      detail: "Granular roles let communities share posts, votes, and artifacts without leaking into other cities.",
--    },
--    {
--      title: "Shops & posts",
--      body: "Register in-game stores, post finds, or swap resources through the same bilingual feed.",
--      detail: "Auto-tag locations, set availability, and keep every shop post timed with live city events.",
--    },
--  ],
--  fa: [
--    {
--      title: "هاب‌های استانی",
--      body: "هر مرکز، استان و شهر ایران جریان مخصوص خودش را دارد تا ماموریت‌ها، فروشگاه‌ها و پست‌ها محلی باقی بمانند.",
--      detail: "نقشه‌ها، مسیرها و رازها از جغرافیای واقعی پیروی می‌کنند تا هر بازیکن شهر خودش را احساس کند.",
--    },
--    {
--      title: "گروه‌های اجتماعی",
--      body: "حلقه‌هایی برای کاوشگران، صاحبان فروشگاه، داستان‌گویان و تیم‌های استانی بسازید یا به آن‌ها بپیوندید.",
--      detail: "نقش‌های دقیق اجازه می‌دهند تا جامعه‌ها پست، رأی یا آثار را بدون نفوذ به شهرهای دیگر به اشتراک بگذارند.",
--    },
--    {
--      title: "فروشگاه‌ها و پست‌ها",
--      body: "فروشگاه‌های بازی را ثبت کنید، یافته‌ها را پست کنید یا منابع را از طریق همان فید دو زبانه مبادله کنید.",
--      detail: "مکان‌ها اتوماتیک تگ می‌شوند، موجودی تنظیم می‌شود و پست‌های فروشگاهی با رویدادهای زنده شهری هم‌زمان می‌شوند.",
--    },
--  ],
--};
--
--const steps: Record<LocaleCode, string[]> = {
--  en: [
--    "Register with email, phone, or a WebAuthn key and pick a nearby center.",
--    "Choose or create a city hub, invite crew, and map the adventure posts you want to guard.",
--    "Log shops, artifacts, and community-triggered events so Koonj cues you when your province needs you.",
--  ],
--  fa: [
--    "با ایمیل، شماره تلفن یا کلید WebAuthn ثبت‌نام کنید و یک مرکز نزدیک را انتخاب کنید.",
--    "هاب شهری را انتخاب یا بسازید، تیم خود را دعوت کنید و پست‌هایی را که باید محافظت شوند علامت‌گذاری کنید.",
--    "فروشگاه‌ها، آثار و رویدادهای جامعه را ثبت کنید تا کونج وقتی استان به شما نیاز دارد، به‌تان هشدار دهد.",
--  ],
--};
--
--const jsonLd = {
--  "@context": "https://schema.org",
--  "@type": "MobileApplication",
--  name: "Koonj",
--  url: "https://koonj.ir",
--  description:
--    "Koonj is a bilingual productivity hub for households, founders, and friends who want calm, shared spaces for plans and checklists.",
--  operatingSystem: "iOS, Android",
--  applicationCategory: "ProductivityApplication",
--  inLanguage: ["en", "fa"],
--  provider: {
--    "@type": "Organization",
--    name: "Koonj Labs",
--    url: "https://koonj.ir",
--  },
--};
--
--const gameLoop = {
--  title: "Mission Step → Instant Reward → Tension → Team Moment → Unlock → Status",
--  summary:
--    "Make every quest feel like wandering a hidden corner of Iran: the reward is shared tension, community proof, and rare status that others crave.",
--};
--
--const rewardSystem: RewardCard[] = [
--  {
--    title: "Every STEP",
--    bullets: [
--      "XP (progress)",
--      "Coins (choice)",
--      "Chance drop (excitement)",
--      "Micro-feedback (“Perfect solve”, “Fast thinker”, “Team sync +10%”)",
--    ],
--    description:
--      "Surprise trumps predictable gains. Give players small bursts that make each action feel meaningful.",
--  },
--  {
--    title: "Every MAP",
--    bullets: ["Badge (identity)", "Chest (loot)", "Story fragment (meaning)", "Ranking points (competition)"],
--    description:
--      "Map completion unlocks visible badges, loot, story snippets, and ranking boosts that prove progress.",
--  },
--  {
--    title: "Every GAME",
--    bullets: [
--      "Title (City Solver, Night Walker)",
--      "Cosmetic glow or avatar frame",
--      "Ability (small but unique)",
--      "Team bonus (shared reward = social glue)",
--    ],
--    description:
--      "Games should feel like new status: titles, cosmetics, unique boosts, and rewards for doing it together.",
--  },
--  {
--    title: "Every HUB",
--    bullets: ["Seasonal leaderboard", "Exclusive items", "Time-limited events", "Real-world drops later"],
--    description:
--      "Hubs become worlds of meaning by layering seasonal story, exclusive loot, and social proof on top of rewards.",
--  },
--];
--
--const hubs: HubCard[] = [
--  {
--    title: "City Explorer",
--    fantasy: "Unlock secrets in the city, not just count steps.",
--    games: "Urban scavenger hunts, landmark riddles, QR missions, night-only runs.",
--    steps: "Reach location → scan symbol/QR → solve puzzle → proof photo → team sync.",
--    why: "Movement, social pressure, city pride, and shareable moments make this flagship hub the heart of Koonj.",
--  },
--  {
--    title: "Brain & Logic Lab",
--    fantasy: "Join an underground puzzle society.",
--    games: "Logic riddles, code-breaking, pattern puzzles, timed escape-like runs.",
--    steps: "Solve → submit → collaborate → beat the clock.",
--    why: "No GPS needed, high think-time, daily rituals, and competitive tension.",
--  },
--  {
--    title: "Fitness & Action",
--    fantasy: "Your body is leveling up with every mission.",
--    games: "Walking quests, run missions, workout streaks, time-based bursts.",
--    steps: "Walk X steps → hold plank → reach checkpoint → beat personal record.",
--    why: "Health, habit, and the perfect subscription hook.",
--  },
--  {
--    title: "Social / Party",
--    fantasy: "This app saves boring nights.",
--    games: "Truth or dare, team dares, icebreakers, date challenges.",
--    steps: "Pick challenge → sync friends → record proof → celebrate.",
--    why: "Zero friction, viral invites, and shareable story moments.",
--  },
--];
--
--const architecture = [
--  {
--    label: "Hub",
--    content: "Theme, season, unlock level, leaderboards.",
--  },
--  {
--    label: "Game",
--    content: "Rules, solo/team mode, rewards, duration.",
--  },
--  {
--    label: "Map",
--    content: "Difficulty, step list, time limit, GPS optional.",
--  },
--  {
--    label: "Step",
--    content: "Type (quiz, GPS, photo, action), XP, coins, chance drop.",
--  },
--];
--
--const missingSystems: SystemCard[] = [
--  {
--    title: "Teams / Squads",
--    body: "Shared XP, squad-only maps, team leaderboards, group rewards. Friends = retention multiplier.",
--  },
--  {
--    title: "Items & Boosts",
--    body: "Double XP timers, hint tokens, skip steps, radar pulses, energy refills. Adds strategy and choice.",
--  },
--  {
--    title: "Seasons",
--    body: "Monthly resets, new maps, limited cosmetics, fast events. Time matters, so resets keep tension alive.",
--  },
--  {
--    title: "Light Story",
--    body: "Zones feel fractured and need balance. Steps become missions, maps become zones, XP becomes impact.",
--  },
--];
--
--export default function Home() {
--  const [locale, setLocale] = useState<LocaleCode>("fa");
--  const localeDir = locales.find((l) => l.code === locale)?.dir ?? "ltr";
--  const fontClass = locale === "fa" ? "font-persian" : "font-english";
--  const localeFeatures = features[locale];
--  const localeSteps = steps[locale];
--  const hero = heroCopy[locale];
--  const orgUrl = "https://github.com/koonj-inc/";
--  const appRepoUrl = "https://github.com/Koonj-Inc/koonj-app";
--  const webRepoUrl = "https://github.com/Koonj-Inc/koonj-web";
--  const donateUrl = "https://zarinp.al/koonj.ir";
--  const foundingYear = 2024;
--  const currentYear = new Date().getFullYear();
--  const yearText = foundingYear === currentYear ? `${currentYear}` : `${foundingYear}–${currentYear}`;
--  const [appStarCount, setAppStarCount] = useState<number | null>(null);
--  const [appStarError, setAppStarError] = useState(false);
--  const [orgInfo, setOrgInfo] = useState<OrgInfo | null>(null);
--  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(releaseDate));
--  const [menuOpen, setMenuOpen] = useState(false);
--  const [showTop, setShowTop] = useState(false);
--
--  const handleLocaleChange = (code: LocaleCode) => {
--    setLocale(code);
--    setMenuOpen(false);
--  };
--
--  const countdownDone =
--    timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
--
--  const timeSegments: TimeSegment[] = [
--    { label: locale === "fa" ? "روز" : "days", value: timeLeft.days },
--    { label: locale === "fa" ? "ساعت" : "hours", value: timeLeft.hours },
--    { label: locale === "fa" ? "دقیقه" : "minutes", value: timeLeft.minutes },
--    { label: locale === "fa" ? "ثانیه" : "seconds", value: timeLeft.seconds },
--  ];
--
--  const orgStats = [
--    { label: locale === "fa" ? "مخازن عمومی" : "Public repos", value: orgInfo?.public_repos },
--    { label: locale === "fa" ? "هواداران" : "Followers", value: orgInfo?.followers },
--    {
--      label: locale === "fa" ? "سال تأسیس" : "Founded",
--      value: orgInfo ? new Date(orgInfo.created_at).getFullYear() : undefined,
--    },
--  ];
--
--  useEffect(() => {
--    let mounted = true;
--    fetch("https://api.github.com/repos/Koonj-Inc/koonj-app")
--      .then((res) => {
--        if (!res.ok) {
--          throw new Error("GitHub API request failed");
--        }
--        return res.json();
--      })
--      .then((data) => {
--        if (mounted && typeof data.stargazers_count === "number") {
--          setAppStarCount(data.stargazers_count);
--        }
--      })
--      .catch(() => {
--        if (mounted) {
--          setAppStarError(true);
--        }
--      });
--    return () => {
--      mounted = false;
--    };
--  }, []);
--
--  useEffect(() => {
--    let mounted = true;
--    fetch("https://api.github.com/orgs/koonj-inc")
--      .then((res) => {
--        if (!res.ok) {
--          throw new Error("GitHub Org request failed");
--        }
--        return res.json();
--      })
--      .then((data) => {
--        if (mounted) {
--          setOrgInfo({
--            login: data.login,
--            description: data.description,
--            blog: data.blog,
--            twitter_username: data.twitter_username,
--            location: data.location,
--            public_repos: data.public_repos,
--            followers: data.followers,
--            created_at: data.created_at,
--          });
--        }
--      })
--      .catch(() => {
--        if (mounted) {
--          setOrgInfo(null);
--        }
--      });
--    return () => {
--      mounted = false;
--    };
--  }, []);
--
--  useEffect(() => {
--    const interval = setInterval(() => {
--      setTimeLeft(calculateTimeLeft(releaseDate));
--    }, 1000);
--    return () => clearInterval(interval);
--  }, []);
--
--  useEffect(() => {
--    const handleScroll = () => setShowTop(window.scrollY > 300);
--    window.addEventListener("scroll", handleScroll, { passive: true });
--    return () => window.removeEventListener("scroll", handleScroll);
--  }, []);
--
--  const warnRelax = useMemo(
--    () => [
--      {
--        title: locale === "fa" ? "هشدار حساب‌شده" : "Measured warning",
--        body:
--          locale === "fa"
--            ? "اعلان‌های بحرانی با رنگی آرام ظاهر می‌شوند تا پیام جدی نمایان باشد ولی چشم را اذیت نکند."
--            : "Critical nudges appear in a soft amber so urgency shows without stressing your eyes.",
--        gradient: "from-[#bfe2d4] to-[#8acfbf]",
--        shadow: "shadow-[0_20px_40px_rgba(116,159,133,0.3)]",
--      },
--      {
--        title: locale === "fa" ? "آرامش پیوسته" : "Relaxed calm",
--        body:
--          locale === "fa"
--            ? "پالت هلویی-سایه‌دار محیط را نوازش می‌کند و تجربه را هم‌درجه با نفس‌های عمیق نگه می‌دارد."
--            : "Peachy-teal gradients keep the interface warm yet restful between updates.",
--        gradient: "from-[#d3e8e0] to-[#96c2b5]",
--        shadow: "shadow-[0_20px_40px_rgba(106,178,161,0.3)]",
--      },
--    ],
--    [locale],
--  );
--
--  return (
--    <>
--      <Script id="koonj-jsonld" type="application/ld+json">
--        {JSON.stringify(jsonLd)}
--      </Script>
--      <AnimatedCursor />
--      <CursorSplash />
--      <header className="fixed inset-x-0 top-0 z-50 font-header" dir={localeDir}>
--        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-b-[32px] border border-white/20 bg-white/5 px-6 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#0f3b2f] shadow-[0_25px_60px_rgba(3,26,19,0.45)] backdrop-blur-3xl">
--          <div className="flex items-center gap-3">
--            <span className="text-lg uppercase tracking-[0.4em]">Koonj</span>
--            <span className="hidden text-[0.65rem] tracking-[0.3em] text-[#0b3d2f] md:inline">
--              {locale === "fa" ? "آرامش دو زبان" : "Calm bilingual flow"}
--            </span>
--          </div>
--          <nav className="hidden flex-wrap items-center gap-2 md:flex">
--            {navLinks.map((link) => (
--              <a
--                key={link.id}
--                href={`#${link.id}`}
--                onClick={() => setMenuOpen(false)}
--                className="cursor-pointer rounded-full border border-white/40 px-3 py-1 text-xs tracking-[0.2em] text-[#0f3b2f] transition hover:border-[#0c6a53] hover:bg-white/40"
--              >
--                {link.label[locale]}
--              </a>
--            ))}
--          </nav>
--          <div className="flex items-center gap-2">
--            <div className="hidden items-center gap-2 rounded-full border border-white/50 bg-white/40 px-2 py-1 text-[0.6rem] tracking-[0.25em] text-[#0b3d2f] md:flex">
--              {locales.map((option) => (
--                <button
--                  key={option.code}
--                  onClick={() => handleLocaleChange(option.code)}
--                  className={`cursor-pointer rounded-full px-2 py-0.5 text-[10px] font-semibold transition ${
--                    locale === option.code ? "bg-[#0f3b2f] text-white" : "bg-transparent text-[#0f3b2f]/70"
--                  }`}
--                >
--                  {option.label}
--                </button>
--              ))}
--            </div>
--            <a
--              href={donateUrl}
--              target="_blank"
--              rel="noreferrer"
--              className="hidden items-center rounded-full border border-[#e5a86d] bg-[#fdf1e3] px-4 py-1 text-[0.65rem] font-semibold tracking-[0.2em] text-[#9a4a0b] transition hover:border-[#c77b49] md:flex"
--            >
--              {locale === "fa" ? "حمایت مالی" : "Donate"}
--            </a>
--            <button
--              onClick={() => setMenuOpen((prev) => !prev)}
--              aria-expanded={menuOpen}
--              className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-white/30 text-[#0f3b2f] shadow-inner shadow-slate-900/10 md:hidden"
--            >
--              <span className="sr-only">Toggle menu</span>
--              <span className="h-1 w-5 rounded-full bg-current" />
--              <span className="h-1 w-5 rounded-full bg-current" />
--              <span className="h-1 w-5 rounded-full bg-current" />
--            </button>
--          </div>
--        </div>
--        <div
--          className={`fixed inset-x-0 top-[68px] z-40 rounded-b-3xl border border-white/30 bg-white/95 p-6 backdrop-blur-3xl transition duration-200 md:hidden ${
--            menuOpen ? "opacity-100" : "pointer-events-none opacity-0"
--          }`}
--        >
--          <nav className="flex flex-col gap-3 text-xs uppercase tracking-[0.3em] text-[#0f3b2f]">
--            {navLinks.map((link) => (
--              <a
--                key={link.id}
--                href={`#${link.id}`}
--                onClick={() => setMenuOpen(false)}
--                className="cursor-pointer rounded-2xl border border-[#d4eee6] px-4 py-2 text-sm transition hover:border-[#0c6a53]"
--              >
--                {link.label[locale]}
--              </a>
--            ))}
--          </nav>
--          <div className="mt-4 flex flex-col gap-3">
--            <a
--              href={donateUrl}
--              target="_blank"
--              rel="noreferrer"
--              className="cursor-pointer block rounded-2xl border border-[#e5a86d] bg-[#fdf1e3] px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-[#9a4a0b] transition hover:border-[#c77b49]"
--            >
--              {locale === "fa" ? "حمایت مالی" : "Donate"}
--            </a>
--            <a
--              href={appRepoUrl}
--              target="_blank"
--              rel="noreferrer"
--              className="cursor-pointer flex items-center justify-center gap-2 rounded-2xl border border-[#0f3b2f] bg-[#0f3b2f]/90 px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:-translate-y-0.5"
--            >
--              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" className="fill-current text-white">
--                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.08.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.1 0 0 .67-.21 2.2.82a7.63 7.63 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.09.16 1.9.08 2.1.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.28.24.54.73.54 1.47 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z" />
--              </svg>
--              <span>{locale === "fa" ? "اپ گیت‌هاب" : "App GitHub"}</span>
--              <span className="text-[0.65rem] text-white/80">
--                {appStarCount !== null ? `${appStarCount.toLocaleString()}★` : appStarError ? "!" : "..."}
--              </span>
--            </a>
--          </div>
--          <div className="mt-4 flex w-full flex-wrap gap-2 rounded-2xl border border-[#d4eee6] bg-[#f0fff9] px-3 py-2">
--            {locales.map((option) => (
--              <button
--                key={option.code}
--                onClick={() => handleLocaleChange(option.code)}
--                className={`cursor-pointer flex-1 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] transition ${
--                  locale === option.code ? "bg-[#0f3b2f] text-white" : "bg-transparent text-[#0f3b2f]/70"
--                }`}
--              >
--                {option.label}
--              </button>
--            ))}
--          </div>
--        </div>
--      </header>
--      <main
--        dir={localeDir}
--        className={`${fontClass} relative min-h-screen pt-[92px] overflow-hidden bg-[#f5f7f6] text-[#0b1c1a] transition-colors duration-300`}
--      >
--        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,232,194,.8),_transparent_45%)] z-[-10]" />
--        <div className="pointer-events-none absolute inset-y-1/3 right-0 hidden w-96 translate-x-16 blur-[140px] lg:block bg-gradient-to-br from-[#fbe8c5]/70 to-transparent" />
--        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-40">
--          <div className="relative flex h-60 w-60 items-center justify-center rounded-full border border-white/40 bg-white/10 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-3xl">
--            <Image
--              src="/koonj-logo.jpg"
--              alt="Koonj logo"
--              width={180}
--              height={180}
--              className="h-full w-full object-contain opacity-80"
--              priority
--            />
--            <span className="pointer-events-none absolute inset-0 rounded-full border border-white/60" />
--          </div>
--        </div>
--        <div className="z-20 mt-6 flex justify-between px-6">
--          <div />
--          <a
--            href={appRepoUrl}
--            target="_blank"
--            rel="noreferrer"
--            className="cursor-pointer inline-flex items-center gap-3 rounded-full border-2 border-[#a8d3c8] bg-[#e2f2eb] px-5 py-3 text-base font-semibold text-[#0a3a32] shadow-[0_25px_60px_rgba(45,70,61,0.25)] transition hover:-translate-y-0.5 hover:border-[#7bb6a6]"
--          >
--            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" className="fill-current text-black">
--              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.08.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.1 0 0 .67-.21 2.2.82a7.63 7.63 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.09.16 1.9.08 2.1.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.28.24.54.73.54 1.47 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z" />
--            </svg>
--            <span className="text-base font-semibold">
--              {appStarCount !== null ? `${appStarCount.toLocaleString()}★` : appStarError ? "GitHub" : "Loading..."}
--            </span>
--          </a>
--        </div>
--        <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-16 lg:px-10">
--          <CountdownBanner
--            locale={locale}
--            timeSegments={timeSegments}
--            countdownDone={countdownDone}
--            appRepoUrl={appRepoUrl}
--          />
--          <HeroSection locale={locale} hero={hero} countdownDone={countdownDone} appRepoUrl={appRepoUrl} />
--          <GameLoopSection locale={locale} gameLoop={gameLoop} rewardSystem={rewardSystem} />
--          <ExperienceSection locale={locale} features={localeFeatures} steps={localeSteps} />
--          <HubsSection locale={locale} hubs={hubs} />
--          <ColorMoodSection locale={locale} items={warnRelax} />
--          <ArchitectureSection locale={locale} items={architecture} />
--          <SystemsSection locale={locale} systems={missingSystems} />
--          <WhySection locale={locale} />
--          <ForWhomSection locale={locale} />
--          <SupportSection locale={locale} donateUrl={donateUrl} />
--          <GitHubSection
--            locale={locale}
--            orgInfo={orgInfo}
--            orgStats={orgStats}
--            orgUrl={orgUrl}
--            appRepoUrl={appRepoUrl}
--            webRepoUrl={webRepoUrl}
--          />
--          <footer className="relative z-10 flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/60 p-6 text-sm text-slate-600 shadow-lg shadow-slate-200 md:flex-row md:items-center md:justify-between">
--            <p>
--              © {yearText} Koonj Labs — {locale === "fa" ? "همه حقوق محفوظ است." : "All rights reserved."}
--            </p>
--            <div className="flex items-center gap-3 text-xs">
--              <a
--                href={appRepoUrl}
--                target="_blank"
--                rel="noreferrer"
--                className="cursor-pointer text-slate-700 transition hover:text-slate-900"
--              >
--                {locale === "fa" ? "مخزن اپ" : "App repo"}
--              </a>
--              <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
--              <span>
--                {appStarCount !== null
--                  ? `${appStarCount.toLocaleString()}★`
--                  : appStarError
--                  ? "Stars hidden"
--                  : "Fetching stars"}
--              </span>
--            </div>
--          </footer>
--        </div>
--        <button
--          type="button"
--          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
--          className={`fixed bottom-6 right-6 z-40 cursor-pointer rounded-full border border-white/30 bg-[#0b1c1a] px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-xl transition-transform hover:-translate-y-1 ${
--            showTop ? "opacity-100" : "opacity-0 pointer-events-none"
--          }`}
--        >
--          {locale === "fa" ? "بالا" : "TOP"}
--        </button>
--      </main>
--    </>
--  );
--}
+
+"use client";
+
+import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
+import Script from "next/script";
+
+import AnimatedCursor from "@/components/AnimatedCursor";
+import CursorSplash from "@/components/CursorSplash";
+import CountdownBanner from "@/components/sections/CountdownBanner";
+import ExperienceSection from "@/components/sections/ExperienceSection";
+import GameLoopSection from "@/components/sections/GameLoopSection";
+import GitHubSection from "@/components/sections/GitHubSection";
+import HubsSection from "@/components/sections/HubsSection";
+import ArchitectureSection from "@/components/sections/ArchitectureSection";
+import ColorMoodSection from "@/components/sections/ColorMoodSection";
+import HeroSection from "@/components/sections/HeroSection";
+import SupportSection from "@/components/sections/SupportSection";
+import SystemsSection from "@/components/sections/SystemsSection";
+import WhySection from "@/components/sections/WhySection";
+import ForWhomSection from "@/components/sections/ForWhomSection";
+import type {
+  LocaleCode,
+  LocaleOption,
+  FeatureCard,
+  RewardCard,
+  HubCard,
+  SystemCard,
+  OrgInfo,
+  TimeSegment,
+} from "@/types/app";
+
+type TimeLeft = {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
+const calculateTimeLeft = (target: Date): TimeLeft => {
+  const diff = target.getTime() - Date.now();
+  if (diff <= 0) {
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+  }
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  return { days, hours, minutes, seconds };
+};
+
+const releaseDate = new Date("2026-02-23T00:00:00Z");
+
+const locales: LocaleOption[] = [
+  { code: "en", label: "English", dir: "ltr" },
+  { code: "fa", label: "فارسی", dir: "rtl" },
+];
+
+const navLinks = [
+  { id: "countdown", label: { en: "Countdown", fa: "شمارش" } },
+  { id: "hero", label: { en: "Intro", fa: "معرفی" } },
+  { id: "experience", label: { en: "Experience", fa: "تجربه" } },
+  { id: "game-loop", label: { en: "Game", fa: "بازی" } },
+  { id: "hubs", label: { en: "Hubs", fa: "هاب‌ها" } },
+  { id: "support", label: { en: "Support", fa: "حمایت" } },
+  { id: "github", label: { en: "GitHub", fa: "گیت‌هاب" } },
+];
+
+const heroCopy = {
+  en: {
+    title: "Koonj is the hidden corner where adventure games, communities, and Iranian cities align.",
+    subtitle:
+      "Discover quests, join community groups, share shops and posts, and let every province, city, and center keep moving together.",
+    describe:
+      "Think of Koonj as the game’s mapped-out corner: rituals, shops, and circle posts flow into one bilingual hub that knows when to pull you back in.",
+  },
+  fa: {
+    title: "کونج همان گوشۀ پنهان است که بازی‌های ماجراجویانه، گروه‌ها و شهرهای ایران را کنار هم می‌گذارد.",
+    subtitle:
+      "ماموریت‌ها را کشف کنید، در گروه‌های اجتماعی شرکت کنید، فروشگاه‌ها و پست‌ها را ثبت کنید و بگذارید هر استان، شهر و مرکز در جریان بماند.",
+    describe:
+      "به کونج مانند گوشۀ خاص نقشه نگاه کنید: آیین‌ها، فروشگاه‌ها و پست‌های گروهی در یک گِردهمایی دو زبانه جریان پیدا می‌کنند تا وقتی لازم شد، شما را دوباره به بازی بکشاند.",
+  },
+};
+
+const features: Record<LocaleCode, FeatureCard[]> = {
+  en: [
+    {
+      title: "Provincial hubs",
+      body: "Each Iranian center, province, and city gets its own flow so quests, shops, and posts stay grounded locally.",
+      detail: "Maps, routes, and secrets follow real geography so every player feels the city they live in.",
+    },
+    {
+      title: "Community groups",
+      body: "Create or join circles for explorers, shopkeepers, storytellers, and province crews.",
+      detail: "Granular roles let communities share posts, votes, and artifacts without leaking into other cities.",
+    },
+    {
+      title: "Shops & posts",
+      body: "Register in-game stores, post finds, or swap resources through the same bilingual feed.",
+      detail: "Auto-tag locations, set availability, and keep every shop post timed with live city events.",
+    },
+  ],
+  fa: [
+    {
+      title: "هاب‌های استانی",
+      body: "هر مرکز، استان و شهر ایران جریان مخصوص خودش را دارد تا ماموریت‌ها، فروشگاه‌ها و پست‌ها محلی باقی بمانند.",
+      detail: "نقشه‌ها، مسیرها و رازها از جغرافیای واقعی پیروی می‌کنند تا هر بازیکن شهر خودش را احساس کند.",
+    },
+    {
+      title: "گروه‌های اجتماعی",
+      body: "حلقه‌هایی برای کاوشگران، صاحبان فروشگاه، داستان‌گویان و تیم‌های استانی بسازید یا به آن‌ها بپیوندید.",
+      detail: "نقش‌های دقیق اجازه می‌دهند تا جامعه‌ها پست، رأی یا آثار را بدون نفوذ به شهرهای دیگر به اشتراک بگذارند.",
+    },
+    {
+      title: "فروشگاه‌ها و پست‌ها",
+      body: "فروشگاه‌های بازی را ثبت کنید، یافته‌ها را پست کنید یا منابع را از طریق همان فید دو زبانه مبادله کنید.",
+      detail: "مکان‌ها اتوماتیک تگ می‌شوند، موجودی تنظیم می‌شود و پست‌های فروشگاهی با رویدادهای زنده شهری هم‌زمان می‌شوند.",
+    },
+  ],
+};
+
+const steps: Record<LocaleCode, string[]> = {
+  en: [
+    "Register with email, phone, or a WebAuthn key and pick a nearby center.",
+    "Choose or create a city hub, invite crew, and map the adventure posts you want to guard.",
+    "Log shops, artifacts, and community-triggered events so Koonj cues you when your province needs you.",
+  ],
+  fa: [
+    "با ایمیل، شماره تلفن یا کلید WebAuthn ثبت‌نام کنید و یک مرکز نزدیک را انتخاب کنید.",
+    "هاب شهری را انتخاب یا بسازید، تیم خود را دعوت کنید و پست‌هایی را که باید محافظت شوند علامت‌گذاری کنید.",
+    "فروشگاه‌ها، آثار و رویدادهای جامعه را ثبت کنید تا کونج وقتی استان به شما نیاز دارد، به‌تان هشدار دهد.",
+  ],
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MobileApplication",
+  name: "Koonj",
+  url: "https://koonj.ir",
+  description:
+    "Koonj is a bilingual productivity hub for households, founders, and friends who want calm, shared spaces for plans and checklists.",
+  operatingSystem: "iOS, Android",
+  applicationCategory: "ProductivityApplication",
+  inLanguage: ["en", "fa"],
+  provider: {
+    "@type": "Organization",
+    name: "Koonj Labs",
+    url: "https://koonj.ir",
+  },
+};
+
+const gameLoop = {
+  title: "Mission Step → Instant Reward → Tension → Team Moment → Unlock → Status",
+  summary:
+    "Make every quest feel like wandering a hidden corner of Iran: the reward is shared tension, community proof, and rare status that others crave.",
+};
+
+const rewardSystem: RewardCard[] = [
+  {
+    title: "Every STEP",
+    bullets: [
+      "XP (progress)",
+      "Coins (choice)",
+      "Chance drop (excitement)",
+      "Micro-feedback (“Perfect solve”, “Fast thinker”, “Team sync +10%”)",
+    ],
+    description:
+      "Surprise trumps predictable gains. Give players small bursts that make each action feel meaningful.",
+  },
+  {
+    title: "Every MAP",
+    bullets: ["Badge (identity)", "Chest (loot)", "Story fragment (meaning)", "Ranking points (competition)"],
+    description:
+      "Map completion unlocks visible badges, loot, story snippets, and ranking boosts that prove progress.",
+  },
+  {
+    title: "Every GAME",
+    bullets: [
+      "Title (City Solver, Night Walker)",
+      "Cosmetic glow or avatar frame",
+      "Ability (small but unique)",
+      "Team bonus (shared reward = social glue)",
+    ],
+    description:
+      "Games should feel like new status: titles, cosmetics, unique boosts, and rewards for doing it together.",
+  },
+  {
+    title: "Every HUB",
+    bullets: ["Seasonal leaderboard", "Exclusive items", "Time-limited events", "Real-world drops later"],
+    description:
+      "Hubs become worlds of meaning by layering seasonal story, exclusive loot, and social proof on top of rewards.",
+  },
+];
+
+const hubs: HubCard[] = [
+  {
+    title: "City Explorer",
+    fantasy: "Unlock secrets in the city, not just count steps.",
+    games: "Urban scavenger hunts, landmark riddles, QR missions, night-only runs.",
+    steps: "Reach location → scan symbol/QR → solve puzzle → proof photo → team sync.",
+    why: "Movement, social pressure, city pride, and shareable moments make this flagship hub the heart of Koonj.",
+  },
+  {
+    title: "Brain & Logic Lab",
+    fantasy: "Join an underground puzzle society.",
+    games: "Logic riddles, code-breaking, pattern puzzles, timed escape-like runs.",
+    steps: "Solve → submit → collaborate → beat the clock.",
+    why: "No GPS needed, high think-time, daily rituals, and competitive tension.",
+  },
+  {
+    title: "Fitness & Action",
+    fantasy: "Your body is leveling up with every mission.",
+    games: "Walking quests, run missions, workout streaks, time-based bursts.",
+    steps: "Walk X steps → hold plank → reach checkpoint → beat personal record.",
+    why: "Health, habit, and the perfect subscription hook.",
+  },
+  {
+    title: "Social / Party",
+    fantasy: "This app saves boring nights.",
+    games: "Truth or dare, team dares, icebreakers, date challenges.",
+    steps: "Pick challenge → sync friends → record proof → celebrate.",
+    why: "Zero friction, viral invites, and shareable story moments.",
+  },
+];
+
+const architecture = [
+  {
+    label: "Hub",
+    content: "Theme, season, unlock level, leaderboards.",
+  },
+  {
+    label: "Game",
+    content: "Rules, solo/team mode, rewards, duration.",
+  },
+  {
+    label: "Map",
+    content: "Difficulty, step list, time limit, GPS optional.",
+  },
+  {
+    label: "Step",
+    content: "Type (quiz, GPS, photo, action), XP, coins, chance drop.",
+  },
+];
+
+const missingSystems: SystemCard[] = [
+  {
+    title: "Teams / Squads",
+    body: "Shared XP, squad-only maps, team leaderboards, group rewards. Friends = retention multiplier.",
+  },
+  {
+    title: "Items & Boosts",
+    body: "Double XP timers, hint tokens, skip steps, radar pulses, energy refills. Adds strategy and choice.",
+  },
+  {
+    title: "Seasons",
+    body: "Monthly resets, new maps, limited cosmetics, fast events. Time matters, so resets keep tension alive.",
+  },
+  {
+    title: "Light Story",
+    body: "Zones feel fractured and need balance. Steps become missions, maps become zones, XP becomes impact.",
+  },
+];
+
+export default function Home() {
+  const [locale, setLocale] = useState<LocaleCode>("fa");
+  const localeDir = locales.find((l) => l.code === locale)?.dir ?? "ltr";
+  const fontClass = locale === "fa" ? "font-persian" : "font-english";
+  const localeFeatures = features[locale];
+  const localeSteps = steps[locale];
+  const hero = heroCopy[locale];
+  const orgUrl = "https://github.com/koonj-inc/";
+  const appRepoUrl = "https://github.com/Koonj-Inc/koonj-app";
+  const webRepoUrl = "https://github.com/Koonj-Inc/koonj-web";
+  const donateUrl = "https://zarinp.al/koonj.ir";
+  const foundingYear = 2024;
+  const currentYear = new Date().getFullYear();
+  const yearText = foundingYear === currentYear ? `${currentYear}` : `${foundingYear}–${currentYear}`;
+  const [appStarCount, setAppStarCount] = useState<number | null>(null);
+  const [appStarError, setAppStarError] = useState(false);
+  const [orgInfo, setOrgInfo] = useState<OrgInfo | null>(null);
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(releaseDate));
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [showTop, setShowTop] = useState(false);
+
+  const handleLocaleChange = (code: LocaleCode) => {
+    setLocale(code);
+    setMenuOpen(false);
+  };
+
+  const countdownDone =
+    timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
+
+  const timeSegments: TimeSegment[] = [
+    { label: locale === "fa" ? "روز" : "days", value: timeLeft.days },
+    { label: locale === "fa" ? "ساعت" : "hours", value: timeLeft.hours },
+    { label: locale === "fa" ? "دقیقه" : "minutes", value: timeLeft.minutes },
+    { label: locale === "fa" ? "ثانیه" : "seconds", value: timeLeft.seconds },
+  ];
+
+  const orgStats = [
+    { label: locale === "fa" ? "مخازن عمومی" : "Public repos", value: orgInfo?.public_repos },
+    { label: locale === "fa" ? "هواداران" : "Followers", value: orgInfo?.followers },
+    {
+      label: locale === "fa" ? "سال تأسیس" : "Founded",
+      value: orgInfo ? new Date(orgInfo.created_at).getFullYear() : undefined,
+    },
+  ];
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("https://api.github.com/repos/Koonj-Inc/koonj-app")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("GitHub API request failed");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (mounted && typeof data.stargazers_count === "number") {
+          setAppStarCount(data.stargazers_count);
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setAppStarError(true);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    fetch("https://api.github.com/orgs/koonj-inc")
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("GitHub Org request failed");
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (mounted) {
+          setOrgInfo({
+            login: data.login,
+            description: data.description,
+            blog: data.blog,
+            twitter_username: data.twitter_username,
+            location: data.location,
+            public_repos: data.public_repos,
+            followers: data.followers,
+            created_at: data.created_at,
+          });
+        }
+      })
+      .catch(() => {
+        if (mounted) {
+          setOrgInfo(null);
+        }
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(releaseDate));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setShowTop(window.scrollY > 300);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const warnRelax = useMemo(
+    () => [
+      {
+        title: locale === "fa" ? "هشدار حساب‌شده" : "Measured warning",
+        body:
+          locale === "fa"
+            ? "اعلان‌های بحرانی با رنگی آرام ظاهر می‌شوند تا پیام جدی نمایان باشد ولی چشم را اذیت نکند."
+            : "Critical nudges appear in a soft amber so urgency shows without stressing your eyes.",
+        gradient: "from-[#bfe2d4] to-[#8acfbf]",
+        shadow: "shadow-[0_20px_40px_rgba(116,159,133,0.3)]",
+      },
+      {
+        title: locale === "fa" ? "آرامش پیوسته" : "Relaxed calm",
+        body:
+          locale === "fa"
+            ? "پالت هلویی-سایه‌دار محیط را نوازش می‌کند و تجربه را هم‌درجه با نفس‌های عمیق نگه می‌دارد."
+            : "Peachy-teal gradients keep the interface warm yet restful between updates.",
+        gradient: "from-[#d3e8e0] to-[#96c2b5]",
+        shadow: "shadow-[0_20px_40px_rgba(106,178,161,0.3)]",
+      },
+    ],
+    [locale],
+  );
+
+  return (
+    <>
+      <Script id="koonj-jsonld" type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </Script>
+      <AnimatedCursor />
+      <CursorSplash />
+      <header className="fixed inset-x-0 top-0 z-50 font-header" dir={localeDir}>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 rounded-b-[32px] border border-white/20 bg-white/5 px-6 py-3 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#0f3b2f] shadow-[0_25px_60px_rgba(3,26,19,0.45)] backdrop-blur-3xl">
+          <div className="flex items-center gap-3">
+            <span className="text-lg uppercase tracking-[0.4em]">Koonj</span>
+            <span className="hidden text-[0.65rem] tracking-[0.3em] text-[#0b3d2f] md:inline">
+              {locale === "fa" ? "آرامش دو زبان" : "Calm bilingual flow"}
+            </span>
+          </div>
+          <nav className="hidden flex-wrap items-center gap-2 md:flex">
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={() => setMenuOpen(false)}
+                className="cursor-pointer rounded-full border border-white/40 px-3 py-1 text-xs tracking-[0.2em] text-[#0f3b2f] transition hover:border-[#0c6a53] hover:bg-white/40"
+              >
+                {link.label[locale]}
+              </a>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 rounded-full border border-white/50 bg-white/40 px-2 py-1 text-[0.6rem] tracking-[0.25em] text-[#0b3d2f] md:flex">
+              {locales.map((option) => (
+                <button
+                  key={option.code}
+                  onClick={() => handleLocaleChange(option.code)}
+                  className={`cursor-pointer rounded-full px-2 py-0.5 text-[10px] font-semibold transition ${
+                    locale === option.code ? "bg-[#0f3b2f] text-white" : "bg-transparent text-[#0f3b2f]/70"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <a
+              href={donateUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="hidden items-center rounded-full border border-[#e5a86d] bg-[#fdf1e3] px-4 py-1 text-[0.65rem] font-semibold tracking-[0.2em] text-[#9a4a0b] transition hover:border-[#c77b49] md:flex"
+            >
+              {locale === "fa" ? "حمایت مالی" : "Donate"}
+            </a>
+            <button
+              onClick={() => setMenuOpen((prev) => !prev)}
+              aria-expanded={menuOpen}
+              className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-full border border-white/50 bg-white/30 text-[#0f3b2f] shadow-inner shadow-slate-900/10 md:hidden"
+            >
+              <span className="sr-only">Toggle menu</span>
+              <span className="h-1 w-5 rounded-full bg-current" />
+              <span className="h-1 w-5 rounded-full bg-current" />
+              <span className="h-1 w-5 rounded-full bg-current" />
+            </button>
+          </div>
+        </div>
+        <div
+          className={`fixed inset-x-0 top-[68px] z-40 rounded-b-3xl border border-white/30 bg-white/95 p-6 backdrop-blur-3xl transition duration-200 md:hidden ${
+            menuOpen ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        >
+          <nav className="flex flex-col gap-3 text-xs uppercase tracking-[0.3em] text-[#0f3b2f]">
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={() => setMenuOpen(false)}
+                className="cursor-pointer rounded-2xl border border-[#d4eee6] px-4 py-2 text-sm transition hover:border-[#0c6a53]"
+              >
+                {link.label[locale]}
+              </a>
+            ))}
+          </nav>
+          <div className="mt-4 flex flex-col gap-3">
+            <a
+              href={donateUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="cursor-pointer block rounded-2xl border border-[#e5a86d] bg-[#fdf1e3] px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-[#9a4a0b] transition hover:border-[#c77b49]"
+            >
+              {locale === "fa" ? "حمایت مالی" : "Donate"}
+            </a>
+            <a
+              href={appRepoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="cursor-pointer flex items-center justify-center gap-2 rounded-2xl border border-[#0f3b2f] bg-[#0f3b2f]/90 px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.3em] text-white transition hover:-translate-y-0.5"
+            >
+              <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" className="fill-current text-white">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.08.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.1 0 0 .67-.21 2.2.82a7.63 7.63 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.09.16 1.9.08 2.1.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.28.24.54.73.54 1.47 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z" />
+              </svg>
+              <span>{locale === "fa" ? "اپ گیت‌هاب" : "App GitHub"}</span>
+              <span className="text-[0.65rem] text-white/80">
+                {appStarCount !== null ? `${appStarCount.toLocaleString()}★` : appStarError ? "!" : "..."}
+              </span>
+            </a>
+          </div>
+          <div className="mt-4 flex w-full flex-wrap gap-2 rounded-2xl border border-[#d4eee6] bg-[#f0fff9] px-3 py-2">
+            {locales.map((option) => (
+              <button
+                key={option.code}
+                onClick={() => handleLocaleChange(option.code)}
+                className={`cursor-pointer flex-1 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                  locale === option.code ? "bg-[#0f3b2f] text-white" : "bg-transparent text-[#0f3b2f]/70"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </header>
+      <main
+        dir={localeDir}
+        className={`${fontClass} relative min-h-screen pt-[92px] overflow-hidden bg-[#f5f7f6] text-[#0b1c1a] transition-colors duration-300`}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,232,194,.8),_transparent_45%)] z-[-10]" />
+        <div className="pointer-events-none absolute inset-y-1/3 right-0 hidden w-96 translate-x-16 blur-[140px] lg:block bg-gradient-to-br from-[#fbe8c5]/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-40">
+          <div className="relative flex h-60 w-60 items-center justify-center rounded-full border border-white/40 bg-white/10 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.35)] backdrop-blur-3xl">
+            <Image
+              src="/koonj-logo.jpg"
+              alt="Koonj logo"
+              width={180}
+              height={180}
+              className="h-full w-full object-contain opacity-80"
+              priority
+            />
+            <span className="pointer-events-none absolute inset-0 rounded-full border border-white/60" />
+          </div>
+        </div>
+        <div className="z-20 mt-6 flex justify-between px-6">
+          <div />
+          <a
+            href={appRepoUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="cursor-pointer inline-flex items-center gap-3 rounded-full border-2 border-[#a8d3c8] bg-[#e2f2eb] px-5 py-3 text-base font-semibold text-[#0a3a32] shadow-[0_25px_60px_rgba(45,70,61,0.25)] transition hover:-translate-y-0.5 hover:border-[#7bb6a6]"
+          >
+            <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" className="fill-current text-black">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.08.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.01.08-2.1 0 0 .67-.21 2.2.82a7.63 7.63 0 012 0c1.53-1.03 2.2-.82 2.2-.82.44 1.09.16 1.9.08 2.1.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.28.24.54.73.54 1.47 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z" />
+            </svg>
+            <span className="text-base font-semibold">
+              {appStarCount !== null ? `${appStarCount.toLocaleString()}★` : appStarError ? "GitHub" : "Loading..."}
+            </span>
+          </a>
+        </div>
+        <div className="mx-auto flex max-w-6xl flex-col gap-16 px-6 py-16 lg:px-10">
+          <CountdownBanner
+            locale={locale}
+            timeSegments={timeSegments}
+            countdownDone={countdownDone}
+            appRepoUrl={appRepoUrl}
+          />
+          <HeroSection locale={locale} hero={hero} countdownDone={countdownDone} appRepoUrl={appRepoUrl} />
+          <GameLoopSection locale={locale} gameLoop={gameLoop} rewardSystem={rewardSystem} />
+          <ExperienceSection locale={locale} features={localeFeatures} steps={localeSteps} />
+          <HubsSection locale={locale} hubs={hubs} />
+          <ColorMoodSection locale={locale} items={warnRelax} />
+          <ArchitectureSection locale={locale} items={architecture} />
+          <SystemsSection locale={locale} systems={missingSystems} />
+          <WhySection locale={locale} />
+          <ForWhomSection locale={locale} />
+          <SupportSection locale={locale} donateUrl={donateUrl} />
+          <GitHubSection
+            locale={locale}
+            orgInfo={orgInfo}
+            orgStats={orgStats}
+            orgUrl={orgUrl}
+            appRepoUrl={appRepoUrl}
+            webRepoUrl={webRepoUrl}
+          />
+          <footer className="relative z-10 flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/60 p-6 text-sm text-slate-600 shadow-lg shadow-slate-200 md:flex-row md:items-center md:justify-between">
+            <p>
+              © {yearText} Koonj Labs — {locale === "fa" ? "همه حقوق محفوظ است." : "All rights reserved."}
+            </p>
+            <div className="flex items-center gap-3 text-xs">
+              <a
+                href={appRepoUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="cursor-pointer text-slate-700 transition hover:text-slate-900"
+              >
+                {locale === "fa" ? "مخزن اپ" : "App repo"}
+              </a>
+              <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+              <span>
+                {appStarCount !== null
+                  ? `${appStarCount.toLocaleString()}★`
+                  : appStarError
+                  ? "Stars hidden"
+                  : "Fetching stars"}
+              </span>
+            </div>
+          </footer>
+        </div>
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className={`fixed bottom-6 right-6 z-40 cursor-pointer rounded-full border border-white/30 bg-[#0b1c1a] px-4 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-xl transition-transform hover:-translate-y-1 ${
+            showTop ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+        >
+          {locale === "fa" ? "بالا" : "TOP"}
+        </button>
+      </main>
+    </>
+  );
+}
