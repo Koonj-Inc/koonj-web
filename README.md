@@ -41,3 +41,5 @@ This repository hosts the single-page Next.js marketing site for **Koonj**, a bi
 
 - Detailed agent instructions and expectations live in `AGENTS.md`.
 - Keep `package.json` scripts for `dev`, `build`, `start`, and `lint` aligned with the Next.js defaults.
+
+update
