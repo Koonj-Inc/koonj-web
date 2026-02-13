@@ -29,10 +29,11 @@ export const metadata: Metadata = {
   keywords: [
     "Koonj",
     "koonj.ir",
-    "bilingual app",
+    "کنج محیطی برای سرگرمی و تحرک و پیدا کردن اسرار",
     "Persian productivity",
     "shared circles",
     "Koonj Labs",
+    "محیط کنج",
     "mobile companion",
   ],
   metadataBase: new URL("https://koonj.ir"),
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Koonj — Everyday made effortless",
     description:
-      "Organize moments, live updates, and trusted circles with a bilingual hub that calms your day.",
+      "برنامه کنج محیطی برای تحرک بیشتر و سرگرمی",
     url: "https://koonj.ir",
     siteName: "Koonj",
     type: "website",
@@ -55,7 +56,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Koonj — Everyday made effortless",
+    title: "Koonj — کنج محیطی دنج برای پیدا کردن اسرار شهر و جنگل و سرگرمی و تحرک",
     description:
       "Koonj keeps plans, people, and places synced with Persian + English reminders.",
   },
@@ -83,7 +84,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body
-        className={`${display.variable} ${body.variable} ${persian.variable} antialiased bg-sand`}
+        className={`${display.variable} ${body.variable} ${persian.variable} antialiased bg-sand relative w-full h-full`}
       >
         {children}
       </body>

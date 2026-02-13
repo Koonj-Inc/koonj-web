@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import CountdownBanner from "@/components/sections/CountdownBanner";
 import type { LocaleCode, TimeSegment } from "@/types/app";
+import Github from "@/components/Buttons/Github";
 
 type TimeLeft = {
   days: number;
@@ -27,10 +28,15 @@ const calculateTimeLeft = (target: Date): TimeLeft => {
 };
 
 export default function Home() {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => calculateTimeLeft(releaseDate));
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>(() =>
+    calculateTimeLeft(releaseDate),
+  );
   const locale: LocaleCode = "fa";
   const countdownDone =
-    timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
+    timeLeft.days === 0 &&
+    timeLeft.hours === 0 &&
+    timeLeft.minutes === 0 &&
+    timeLeft.seconds === 0;
   const timeSegments: TimeSegment[] = [
     { label: locale === "fa" ? "روز" : "days", value: timeLeft.days },
     { label: locale === "fa" ? "ساعت" : "hours", value: timeLeft.hours },
@@ -47,7 +53,8 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#040404] px-4 py-16">
+    <main className="flex min-h-screen items-center justify-center flex-col bg-[#040404] px-4 py-16">
+      <Github />
       <CountdownBanner
         locale={locale}
         timeSegments={timeSegments}
